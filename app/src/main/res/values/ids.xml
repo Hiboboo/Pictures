@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="rootview_layout" type="id"/>
+    <item name="coordinator_layout" type="id"/>
+    <item name="appbar_layout" type="id"/>
+    <item name="collapsing_toolbar" type="id"/>
+    <item name="toolbar" type="id"/>
+    <item name="tabs" type="id"/>
+    <item name="tag_item_data" type="id"/>
+    <item name="nested_scroll_view" type="id"/>
+    <item name="tab_text" type="id"/>
+    <item name="tab_text_count" type="id"/>
+    <item name="refreshlayout" type="id"/>
+    <item name="recyclerview" type="id"/>
+    <item name="linearlayout" type="id"/>
+</resources>

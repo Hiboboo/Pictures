@@ -1,0 +1,29 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
+    </style>
+
+    <!-- {@link android.app.Activity}的跳转切换动画 -->
+    <style name="ActivityAnimation">
+        <item name="android:activityOpenEnterAnimation">@anim/enter_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/exit_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/enter_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/exit_right</item>
+        <item name="android:taskOpenEnterAnimation">@anim/enter_right</item>
+        <item name="android:taskOpenExitAnimation">@anim/exit_left</item>
+        <item name="android:taskCloseEnterAnimation">@anim/enter_left</item>
+        <item name="android:taskCloseExitAnimation">@anim/exit_right</item>
+        <item name="android:taskToFrontEnterAnimation">@anim/enter_right</item>
+        <item name="android:taskToFrontExitAnimation">@anim/exit_left</item>
+        <item name="android:taskToBackEnterAnimation">@anim/enter_left</item>
+        <item name="android:taskToBackExitAnimation">@anim/exit_right</item>
+    </style>
+
+</resources>

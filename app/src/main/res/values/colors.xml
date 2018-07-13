@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF6F00</color>
+    <color name="colorPrimaryDark">#FF6F00</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="app_background">#FFFFFF</color>
+
+    <color name="red_50">#FFEBEE</color>
+    <color name="purple_50">#F3E5F5</color>
+    <color name="blue_50">#E3F2FD</color>
+    <color name="transparent">#00000000</color>
+
+    <color name="navigation_tab_selected">#FF6F00</color>
+    <color name="navigation_tab_text_default">#263238</color>
+    <color name="navigation_tab_text_selected">#FF6F00</color>
+</resources>

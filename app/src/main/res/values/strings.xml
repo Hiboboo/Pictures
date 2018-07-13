@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Pictures</string>
+
+    <string name="tab_home">全部图片</string>
+    <string name="tab_popular">热门分类</string>
+
+    <string name="label_permission_allow">允许</string>
+    <string name="label_permission_deny">拒绝</string>
+    <string name="message_notfound_network">没有可用网络</string>
+    <string name="message_setting_network_now">现在就去设置网络？</string>
+    <string name="label_network_settings">去设置</string>
+    <string name="label_next_settings">下次吧</string>
+</resources>

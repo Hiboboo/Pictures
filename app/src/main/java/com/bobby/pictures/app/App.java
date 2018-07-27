@@ -1,11 +1,5 @@
 package com.bobby.pictures.app;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.support.annotation.StringRes;
-
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
-
 /**
  * 作者 Bobby on 2018/05/29.
  */

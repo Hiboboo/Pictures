@@ -162,7 +162,7 @@ public class FreshDownloadView extends View
                 setCircularColor(array.getColor(R.styleable.FreshDownloadView_circular_color, Color.WHITE));
                 setProgressColor(array.getColor(R.styleable.FreshDownloadView_circular_progress_color, Color.WHITE));
                 setCircularWidth(array.getDimension(R.styleable.FreshDownloadView_circular_width, getResources().getDimension(R.dimen.dp_2)));
-                setProgressTextSize(array.getDimension(R.styleable.FreshDownloadView_progress_text_size, getResources().getDimension(R.dimen.default_text_size)));
+                setProgressTextSize(array.getDimension(R.styleable.FreshDownloadView_progress_text_size, getResources().getDimension(R.dimen.dp_8)));
             } finally
             {
                 array.recycle();

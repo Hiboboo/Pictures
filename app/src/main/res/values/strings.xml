@@ -3,9 +3,33 @@
 
     <string name="tab_home">全部图片</string>
     <string name="tab_popular">热门分类</string>
+    <string name="tab_photo">照片</string>
+    <string name="tab_collect">收藏</string>
+    <string name="tab_stats">星标</string>
+
+    <string name="action_settings">设置</string>
+    
+    <string name="label_auto_wallpager">自动更新壁纸</string>
+    <string name="label_wallpager_keyword">壁纸关键字（只限英文）</string>
+    <string name="label_wallpager_keyword_hint">多个关键字请使用英文分号（;）来分割</string>
+    <string name="label_wallpager_update_interval">更新间隔，单位分钟</string>
+    <string name="label_wallpager_update_interval_hint">希望每隔多长时间更新一次（最低不得小于15分钟）</string>
+    <string name="label_wallpager_network_type">希望在什么网络环境下进行？</string>
+    <string name="label_network_any">任何网络</string>
+    <string name="label_network_wifi">只在Wifi</string>
+    <string name="label_wallpager_crop">希望改变壁纸尺寸吗？</string>
+    <string name="label_pic_original">保持原图</string>
+    <string name="label_pic_resolution">匹配分辨率</string>
+
+    <string name="format_label_total_views">%s\n总浏览量</string>
+    <string name="format_label_history_rank">%s\n历史排名</string>
+    <string name="format_label_30_rank">%s\n30天排名</string>
 
     <string name="label_permission_allow">允许</string>
     <string name="label_permission_deny">拒绝</string>
+    <string name="message_storage_permission">不让程序用你的文件管理器，它怎么给你更新壁纸嘛！！！</string>
+    <string name="label_allow">给你用</string>
+    <string name="label_repulse">不让用</string>
     <string name="message_notfound_network">没有可用网络</string>
     <string name="message_setting_network_now">现在就去设置网络？</string>
     <string name="label_network_settings">去设置</string>

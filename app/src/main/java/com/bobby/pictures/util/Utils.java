@@ -9,13 +9,18 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Keep;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.bobby.pictures.app.App;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
+import com.lzy.okgo.model.Response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,6 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 
 /**
  * 提供各种工具
@@ -240,23 +249,6 @@ public class Utils
         return null;
     }
 
-    public static void hideInputView(Activity activity)
-    {
-        InputMethodManager manager = ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE));
-        View mFocusView = activity.getCurrentFocus();
-        if (mFocusView != null)
-            manager.hideSoftInputFromWindow(mFocusView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
-
-    public static void showInputView(View view, Context mContext)
-    {
-        if (view.requestFocus())
-        {
-            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
-    }
-
     /**
      * 启动压缩。
      *
@@ -359,56 +351,5 @@ public class Utils
             else
                 return 10;
         }
-    }
-
-    /**
-     * 将Bitmap转换为Byte数组
-     *
-     * @param bmp         原Bitmap
-     * @param needRecycle 是否在转换完成后将原Bitmap进行回收
-     * @return 返回被转换后的字节数组
-     */
-    public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle)
-    {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, output);
-        if (needRecycle)
-            bmp.recycle();
-        byte[] result = output.toByteArray();
-        try
-        {
-            output.close();
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    @Keep
-    public static <T> T comparisonMergeToLatest(T oldObj, T newObj)
-    {
-        Class<?> sourceBeanClass = oldObj.getClass();
-
-        Field[] sourceFields = sourceBeanClass.getDeclaredFields();
-        Field[] targetFields = sourceBeanClass.getDeclaredFields();
-        for (int i = 0; i < sourceFields.length; i++)
-        {
-            Field sourceField = sourceFields[i];
-            Field targetField = targetFields[i];
-            sourceField.setAccessible(true);
-            targetField.setAccessible(true);
-            try
-            {
-                Object oldValue = sourceField.get(oldObj);
-                Object targetValue = targetField.get(newObj);
-                if (targetValue != null && !targetValue.equals(oldValue))
-                    sourceField.set(oldObj, targetValue);
-            } catch (IllegalArgumentException | IllegalAccessException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        return oldObj;
     }
 }

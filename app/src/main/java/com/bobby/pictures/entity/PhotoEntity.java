@@ -21,6 +21,7 @@ public class PhotoEntity
     public String largeSrc;
     public String pinSrc;
     public String smallSrc;
+    public String downloadUrl;
     public int width;
     public int height;
     public int[] rgb;
@@ -36,8 +37,7 @@ public class PhotoEntity
     {
         return "id=" + id + "｜title=" + title + "｜thumbnail1x=" + thumbnail1x + "｜thumbnail2x=" + thumbnail2x +
                 "｜largeSrc=" + largeSrc + "｜bigSrc=" + bigSrc + "｜pinSrc=" + pinSrc +
-                "｜smallSrc=" + smallSrc + "｜detailPage=" + deatilPage +
-                "｜width=" + width + "｜height=" + height + "｜rgb=" + Arrays.toString(rgb) +
-                "｜user=" + user.toString();
+                "｜smallSrc=" + smallSrc + "｜DownloadURL=" + downloadUrl + "｜detailPage=" + deatilPage +
+                "｜width=" + width + "｜height=" + height + "｜rgb=" + Arrays.toString(rgb);
     }
 }

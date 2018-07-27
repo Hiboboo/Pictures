@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -50,12 +51,34 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
     private void onRefreshLayout(boolean isAllowSetupViews)
     {
         Toolbar mToolbar = this.findViewById(R.id.toolbar);
+        if (mToolbar != null)
+            mToolbar.setTitle(getPageTitle());
         this.setSupportActionBar(mToolbar);
         ActionBar mActionbar = getSupportActionBar();
         if (mActionbar != null)
             mActionbar.setDisplayHomeAsUpEnabled(isDisplayHomeAsUpEnabled());
         if (isAllowSetupViews)
             this.setupViews();
+    }
+
+    /**
+     * 获取页面标题
+     *
+     * @return 返回页面的标题，默认返回应用程序的名称
+     */
+    public CharSequence getPageTitle()
+    {
+        return getResources().getString(getPageTitleRes());
+    }
+
+    /**
+     * 获取页面标题
+     *
+     * @return 返回页面标题的资源ID
+     */
+    public int getPageTitleRes()
+    {
+        return R.string.app_name;
     }
 
     @Override
@@ -120,7 +143,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
         {
             if (!isLoadSuccess)
             {
-                @SuppressLint("WrongViewCast") RelativeLayout mRootLayout = this.findViewById(R.id.rootview_layout);
+                @SuppressLint("WrongViewCast") FrameLayout mRootLayout = this.findViewById(R.id.rootview_layout);
                 mRootLayout.removeAllViews();
                 mRootLayout.addView(getLayoutInflater().inflate(layoutRes, mRootLayout, false));
                 this.onRefreshLayout(true);
@@ -128,7 +151,7 @@ public abstract class BaseAppCompatActivity extends AppCompatActivity
             }
         } else
         {
-            final FrameLayout mRootLayout = this.findViewById(R.id.root_content_layout);
+            final FrameLayout mRootLayout = this.findViewById(R.id.rootview_layout);
             mRootLayout.removeAllViews();
             mRootLayout.addView(getLayoutInflater().inflate(state.layout, mRootLayout, false));
         }

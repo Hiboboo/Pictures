@@ -10,6 +10,10 @@
         <item name="android:windowAnimationStyle">@style/ActivityAnimation</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <!-- {@link android.app.Activity}的跳转切换动画 -->
     <style name="ActivityAnimation">
         <item name="android:activityOpenEnterAnimation">@anim/enter_right</item>

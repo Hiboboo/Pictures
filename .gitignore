@@ -7,3 +7,12 @@
 /build
 /captures
 .externalNativeBuild
+/.idea/vcs.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/runConfigurations.xml
+app/libs/
+app/src/androidTest/
+app/src/test/
+gradle/

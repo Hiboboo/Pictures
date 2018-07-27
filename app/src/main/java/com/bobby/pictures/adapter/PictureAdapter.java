@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.othershe.library.NiceImageView;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class PictureAdapter extends BaseQuickAdapter<PhotoEntity, BaseViewHolder
     @Override
     protected void convert(final BaseViewHolder helper, PhotoEntity item)
     {
-        AppCompatImageView mImageView = helper.getView(R.id.image_thumbnail);
+        NiceImageView mImageView = helper.getView(R.id.image_thumbnail);
         int imageWidth = item.width;
         int imageHeight = item.height;
         ViewGroup.LayoutParams params = mImageView.getLayoutParams();

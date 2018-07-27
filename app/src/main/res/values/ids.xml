@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="rootview_layout" type="id"/>
+    <item name="viewpager" type="id"/>
     <item name="coordinator_layout" type="id"/>
     <item name="appbar_layout" type="id"/>
     <item name="collapsing_toolbar" type="id"/>

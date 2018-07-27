@@ -1,9 +1,8 @@
 package com.bobby.pictures.actions.home;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,18 +12,12 @@ import android.view.View;
 import com.bobby.pictures.R;
 import com.bobby.pictures.actions.abs.BaseFragment;
 import com.bobby.pictures.adapter.PicturePopularAdapter;
-import com.bobby.pictures.entity.PhotoEntity;
+import com.bobby.pictures.app.App;
 import com.bobby.pictures.entity.PopularEntity;
+import com.bobby.pictures.util.AsynchronousManager;
+import com.bobby.pictures.util.ExecuteApi;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.parceler.Parcels;
-
-import java.io.IOException;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 
 /**
@@ -57,6 +50,7 @@ public class PicturePopularFragment extends BaseFragment
         adapter = new PicturePopularAdapter(new ArrayList<PopularEntity>());
         adapter.setEnableLoadMore(true);
         adapter.setOnLoadMoreListener(mLoadMoreListener, mRecyclerView);
+        adapter.setOnItemClickListener(mItemClickListener);
         mRecyclerView.setAdapter(adapter);
     }
 
@@ -105,8 +99,20 @@ public class PicturePopularFragment extends BaseFragment
         }
     }
 
+    private BaseQuickAdapter.OnItemClickListener mItemClickListener = new BaseQuickAdapter.OnItemClickListener()
+    {
+        @Override
+        public void onItemClick(BaseQuickAdapter a, View view, int position)
+        {
+            PopularEntity entity = adapter.getItem(position);
+            Intent intent = new Intent(mContext, PopularPictureActivity.class);
+            intent.putExtra(App.Key.KEY_EXTRA_TITLE, entity.name);
+            intent.putExtra(App.Key.KEY_EXTRA_DATA, entity.pageUrl);
+            startActivity(intent);
+        }
+    };
+
     private int page = 1;
-    private final RefreshRunnable refreshRunnable = new RefreshRunnable();
 
     private SwipeRefreshLayout.OnRefreshListener mRefreshListener = new SwipeRefreshLayout.OnRefreshListener()
     {
@@ -114,7 +120,8 @@ public class PicturePopularFragment extends BaseFragment
         public void onRefresh()
         {
             page = 1;
-            new Thread(refreshRunnable).start();
+            AsynchronousManager.getInstance().refreshApiValues(ExecuteApi.Apis.POPULAR_LIST);
+            getDatas();
         }
     };
 
@@ -124,7 +131,7 @@ public class PicturePopularFragment extends BaseFragment
         public void onLoadMoreRequested()
         {
             page++;
-            new Thread(refreshRunnable).start();
+            getDatas();
         }
     };
 
@@ -142,67 +149,29 @@ public class PicturePopularFragment extends BaseFragment
             adapter.setNewData(entities);
     }
 
-    private static class RefreshLoaderHandler extends Handler
+    private void getDatas()
     {
-        private SoftReference<PicturePopularFragment> reference;
+        final String TAG = PicturePopularFragment.class.getName();
+        new AsynchronousManager.Builder(TAG)
+                .setApi(ExecuteApi.Apis.POPULAR_LIST)
+                .addParams(new ExecuteApi.Params.Builder()
+                        .addPage(page)
+                        .build())
+                .setOnResultCallback(new AsynchronousManager.OnResultCallback<ArrayList<PopularEntity>>()
+                {
+                    @Override
+                    public void onSuccessResult(String tag, ArrayList<PopularEntity> data)
+                    {
+                        if (tag.equals(TAG))
+                            setPicturePopularDatas(data);
+                    }
 
-        RefreshLoaderHandler(PicturePopularFragment activity)
-        {
-            reference = new SoftReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg)
-        {
-            if (msg.what == 200)
-            {
-                ArrayList<PopularEntity> entities = Parcels.unwrap(msg.getData().getParcelable("photos"));
-                reference.get().setPicturePopularDatas(entities);
-            } else
-                reference.get().setPicturePopularDatas(null);
-        }
-    }
-
-    private final RefreshLoaderHandler mHandler = new RefreshLoaderHandler(this);
-
-    private class RefreshRunnable implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            Message message = mHandler.obtainMessage();
-            try
-            {
-                ArrayList<PopularEntity> entities = getPopluarList(page);
-                message.getData().putParcelable("photos", Parcels.wrap(entities));
-                message.what = 200;
-            } catch (IOException e)
-            {
-                e.printStackTrace();
-                message.what = 500;
-            }
-            mHandler.sendMessage(message);
-        }
-    }
-
-    private ArrayList<PopularEntity> getPopluarList(int page) throws IOException
-    {
-        ArrayList<PopularEntity> entities = new ArrayList<>();
-        final String baseUrl = "https://www.pexels.com";
-        Document doc = Jsoup.connect(baseUrl + "/popular-searches?page=" + page).get();
-        Elements elements = doc.select("div[class*=l-lg-3 l-md-4 l-sm-6 search-medium]");
-        for (Element element : elements)
-        {
-            Element linkElement = element.selectFirst("a[class*=search-medium__link]");
-            if (null == linkElement)
-                continue;
-            PopularEntity entity = new PopularEntity();
-            entity.pageUrl = baseUrl + linkElement.attr("href");
-            Element imageElement = element.selectFirst("img[class*=search-medium__image]");
-            entity.name = imageElement.attr("alt");
-            entity.thumbnail = imageElement.attr("src");
-            entities.add(entity);
-        }
-        return entities;
+                    @Override
+                    public void onFailure(String tag)
+                    {
+                        if (tag.equals(TAG))
+                            setPicturePopularDatas(null);
+                    }
+                }).execute();
     }
 }

@@ -7,7 +7,7 @@
 
 #### 重点介绍一下自动更换壁纸的功能
 先看截图吧
-
+![](https://github.com/Hiboboo/Pictures/blob/master/screen%20pictures/device-2018-07-27-170618.png)
 从截图中可以看到这里有几个关键性的设置
 
 - **壁纸关键字**：

@@ -1,6 +1,7 @@
 package com.bobby.pictures.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.bobby.pictures.entity.PhotoEntity;
@@ -23,6 +24,8 @@ import java.util.List;
  */
 public final class ExecuteApi
 {
+    private final String TAG = ExecuteApi.class.getSimpleName();
+
     public enum Apis
     {
         HOME_LIST(0xff15),
@@ -144,13 +147,13 @@ public final class ExecuteApi
             photo.largeSrc = imageEl.attr("data-large-src");
             photo.smallSrc = imageEl.attr("src");
             photo.pinSrc = imageEl.attr("data-pin-media");
-            String widthText = imageEl.attr("width").trim();
+            String widthText = imageEl.attr("data-image-width").trim();
             if (!widthText.matches("\\d+"))
-                widthText = "0";
+                widthText = "1";
             photo.width = Integer.parseInt(widthText);
-            String heightText = imageEl.attr("height").trim();
+            String heightText = imageEl.attr("data-image-height").trim();
             if (!heightText.matches("\\d+"))
-                heightText = "0";
+                heightText = "1";
             photo.height = Integer.parseInt(heightText);
             String style = imageEl.attr("style");
             String[] rgbs = style.replaceAll("[a-zA-Z():]", "").split(",");
@@ -163,12 +166,16 @@ public final class ExecuteApi
                 rgb[i] = Integer.parseInt(text);
             }
             photo.rgb = rgb;
-            photo.deatilPage = element.selectFirst("a[class*=js-photo-link]").attr("href");
-            UserEntity user = new UserEntity();
-            user.avatar = element.selectFirst("img[class*=photo-item__avatar]").attr("src");
-            user.author = element.selectFirst("span[class*=photo-item__name]").text();
-            photo.user = user;
-            images.add(photo);
+            Element linkEl = element.selectFirst("a[class*=js-photo-link]");
+            if (linkEl != null)
+            {
+                photo.deatilPage = linkEl.attr("href");
+                UserEntity user = new UserEntity();
+                user.avatar = element.selectFirst("img[class*=photo-item__avatar]").attr("src");
+                user.author = element.selectFirst("span[class*=photo-item__name]").text();
+                photo.user = user;
+                images.add(photo);
+            }
         }
         return images;
     }
@@ -206,24 +213,25 @@ public final class ExecuteApi
 
     private PhotoEntity getImage(String url) throws IOException
     {
+        Log.d(TAG, baseUrl + url);
         Document doc = Jsoup.connect(baseUrl + url).get();
 
         PhotoEntity image = new PhotoEntity();
         Element picElementByImg = doc.selectFirst("picture[class*=image-section__picture]").selectFirst("img");
         this.parseImageTags(image, picElementByImg);
+        image.rgb = this.parseRgbs(picElementByImg.attr("style"));
 
         image.bigSrc = picElementByImg.attr("data-zoom-src");
         image.downloadUrl = doc.selectFirst("a[download]").attr("href");
         Element divActionElement = doc.selectFirst("div[class*=box image-section__actions]");
         image.id = divActionElement.selectFirst("button").attr("data-photo-id");
 
-        Element profileboxEl = doc.selectFirst("div[class*=mini-profile box]");
-        Element imgElement = profileboxEl.selectFirst("img[class*=mini-profile__img]");
+        Element divElement = doc.selectFirst("div[class*=mini-profile]");
         UserEntity user = new UserEntity();
-        user.author = imgElement.attr("alt");
-        user.avatar = imgElement.attr("src");
-        user.userid = profileboxEl.selectFirst("button").attr("data-user-id");
-        Element alinkEl = profileboxEl.selectFirst("a[class*=mini-profile__link]");
+        user.author = divElement.selectFirst("[class*=mini-profile__name]").text();
+        user.avatar = divElement.selectFirst("img[class*=mini-profile__img]").attr("src");
+        user.userid = divElement.selectFirst("button").attr("data-user-id");
+        Element alinkEl = divElement.selectFirst("a[class*=mini-profile__link]");
         if (alinkEl != null)
         {
             user.userPage = alinkEl.attr("href");
@@ -240,6 +248,8 @@ public final class ExecuteApi
             childImage.deatilPage = pageEl.attr("href");
             this.parseImageTags(childImage, photoEl.selectFirst("img[class*=photo-item__img]"));
             childImage.downloadUrl = photoEl.selectFirst("a[download]").attr("href");
+            String style = photoEl.selectFirst("a[class*=js-photo-link photo-item__link]").attr("style");
+            childImage.rgb = this.parseRgbs(style);
             similarPhotos.add(childImage);
         }
         image.mSimilarPhotos = similarPhotos;
@@ -260,15 +270,18 @@ public final class ExecuteApi
         entity.largeSrc = imgElement.attr("data-large-src");
         entity.smallSrc = imgElement.attr("src");
         entity.pinSrc = imgElement.attr("data-pin-media");
-        String widthText = imgElement.attr("width");
+        String widthText = imgElement.attr("data-image-width");
         if (!widthText.matches("\\d+"))
-            widthText = "0";
+            widthText = "1";
         entity.width = Integer.parseInt(widthText);
-        String heightText = imgElement.attr("height");
+        String heightText = imgElement.attr("data-image-height");
         if (!heightText.matches("\\d+"))
-            heightText = "0";
+            heightText = "1";
         entity.height = Integer.parseInt(heightText);
-        String style = imgElement.attr("style");
+    }
+
+    private int[] parseRgbs(String style)
+    {
         String[] rgbs = style.replaceAll("[a-zA-Z():]", "").split(",");
         int[] rgb = new int[rgbs.length];
         for (int i = 0; i < rgbs.length; i++)
@@ -278,7 +291,7 @@ public final class ExecuteApi
                 text = "0";
             rgb[i] = Integer.parseInt(text);
         }
-        entity.rgb = rgb;
+        return rgb;
     }
 
     public ArrayList<PhotoEntity> getPeopleImages(int page, String photoUrl) throws IOException
@@ -305,25 +318,16 @@ public final class ExecuteApi
             entity.largeSrc = imgElement.attr("data-large-src");
             entity.smallSrc = imgElement.attr("src");
             entity.pinSrc = imgElement.attr("data-pin-media");
-            String widthText = imgElement.attr("width").trim();
+            String widthText = imgElement.attr("data-image-width").trim();
             if (!widthText.matches("\\d+"))
-                widthText = "0";
+                widthText = "1";
             entity.width = Integer.parseInt(widthText);
-            String heightText = imgElement.attr("height").trim();
+            String heightText = imgElement.attr("data-image-height").trim();
             if (!heightText.matches("\\d+"))
-                heightText = "0";
+                heightText = "1";
             entity.height = Integer.parseInt(heightText);
-            String style = imgElement.attr("style");
-            String[] rgbs = style.replaceAll("[a-zA-Z():]", "").split(",");
-            int[] rgb = new int[rgbs.length];
-            for (int i = 0; i < rgbs.length; i++)
-            {
-                String text = rgbs[i].trim();
-                if (!text.matches("\\d{1,3}"))
-                    text = "0";
-                rgb[i] = Integer.parseInt(text);
-            }
-            entity.rgb = rgb;
+            String style = element.selectFirst("a[class*=js-photo-link photo-item__link]").attr("style");
+            entity.rgb = this.parseRgbs(style);
             images.add(entity);
         }
         return images;

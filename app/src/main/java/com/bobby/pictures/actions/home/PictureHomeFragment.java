@@ -16,6 +16,7 @@ import com.bobby.pictures.entity.PhotoEntity;
 import com.bobby.pictures.util.AsynchronousManager;
 import com.bobby.pictures.util.ExecuteApi;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -50,6 +51,7 @@ public class PictureHomeFragment extends BaseFragment
         manager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
         manager.setFlexWrap(FlexWrap.WRAP);
         manager.setFlexDirection(FlexDirection.ROW);
+        manager.setAlignItems(AlignItems.FLEX_START);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setHasFixedSize(true);
         adapter = new PictureAdapter(new ArrayList<PhotoEntity>());

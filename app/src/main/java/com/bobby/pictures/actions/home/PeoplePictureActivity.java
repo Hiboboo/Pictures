@@ -166,32 +166,31 @@ public class PeoplePictureActivity extends ImmerseAppCompatActivity
         final String baseUrl = "https://www.pexels.com" + url;
         Document doc = Jsoup.connect(baseUrl).get();
         UserEntity entity = new UserEntity();
-        Element element = doc.selectFirst("img[class*=profile-header__img]");
-        entity.author = element.attr("alt");
-        entity.avatar = element.attr("src");
-        Elements statsElements = doc.selectFirst("div[class*=profile-header__stats]")
-                .select("a[class*=profile-header__link fact-box fact-box--inline]");
+        Element element = doc.selectFirst("div[class*=profile-header__user-info__avatar__container]");
+        entity.author = element.selectFirst("img").attr("alt");
+        entity.avatar = element.selectFirst("img").attr("src");
+        Elements statsElements = doc.select("span[class=profile-header__fact]");
         for (Element linkElement : statsElements)
         {
-            String fact = linkElement.selectFirst("span[class*=fact-box__fact]").text();
-            String title = linkElement.selectFirst("span[class*=fact-box__title]").text();
-            if (title.contains("Total"))
-                entity.totalViews = fact;
-            if (title.contains("All"))
-                entity.historyRank = fact;
-            if (title.contains("30"))
-                entity.day30Rank = fact;
+            String html = linkElement.html();
+            String value = linkElement.selectFirst("strong").text();
+            if (html.contains("Total"))
+                entity.totalViews = value;
+            if (html.contains("All-time"))
+                entity.historyRank = value;
+            if (html.contains("30"))
+                entity.day30Rank = value;
         }
-        Elements pageElement = doc.selectFirst("div[class*=tabs tabs--in-container clear]").getElementsByTag("a");
+        Elements pageElement = doc.selectFirst("div[class*=rd__tabs]").select("a[class*=rd__tabs__tab]");
         for (Element pElement : pageElement)
         {
             String text = pElement.text();
             String linkUrl = pElement.attr("href");
-            if (text.contains("hoto"))
+            if (text.contains("Photo"))
                 data.putString("page.photo", linkUrl);
-            if (text.contains("ollection"))
+            if (text.contains("Collections"))
                 data.putString("page.collect", linkUrl);
-            if (text.contains("tats"))
+            if (text.contains("Stats"))
                 data.putString("page.stats", linkUrl);
         }
         return entity;

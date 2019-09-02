@@ -1,6 +1,5 @@
 package com.bobby.pictures.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,29 +8,17 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Keep;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import androidx.annotation.Keep;
 
 import com.bobby.pictures.app.App;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.FileCallback;
-import com.lzy.okgo.model.Response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 /**
  * 提供各种工具

@@ -16,7 +16,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.AbsSavedState;
+import androidx.customview.view.AbsSavedState;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;

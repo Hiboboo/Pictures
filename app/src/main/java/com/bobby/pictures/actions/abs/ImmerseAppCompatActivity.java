@@ -1,11 +1,11 @@
 package com.bobby.pictures.actions.abs;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
 
-import com.bobby.pictures.R;
-import com.gyf.barlibrary.ImmersionBar;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
+
+import com.gyf.immersionbar.ImmersionBar;
 
 /**
  * 具备沉浸式状态栏
@@ -32,13 +32,5 @@ public abstract class ImmerseAppCompatActivity extends BaseAppCompatActivity
                 .fitsSystemWindows(true)
                 .statusBarDarkFont(true, 1.0f);
         mImmersionBar.init();
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        if (mImmersionBar != null)
-            mImmersionBar.destroy();
     }
 }

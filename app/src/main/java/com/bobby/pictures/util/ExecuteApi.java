@@ -216,8 +216,11 @@ public final class ExecuteApi
         Log.d(TAG, baseUrl + url);
         Document doc = Jsoup.connect(baseUrl + url).get();
 
+        Element firstElement = doc.selectFirst("picture[class*=image-section__picture]");
+        if (null == firstElement)
+            return null;
         PhotoEntity image = new PhotoEntity();
-        Element picElementByImg = doc.selectFirst("picture[class*=image-section__picture]").selectFirst("img");
+        Element picElementByImg = firstElement.selectFirst("img");
         this.parseImageTags(image, picElementByImg);
         image.rgb = this.parseRgbs(picElementByImg.attr("style"));
 

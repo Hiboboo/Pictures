@@ -1,19 +1,23 @@
 package com.bobby.pictures.adapter;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bobby.pictures.R;
 import com.bobby.pictures.entity.PhotoEntity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.othershe.library.NiceImageView;
 
 import java.util.List;
@@ -35,17 +39,10 @@ public class PictureAdapter extends BaseQuickAdapter<PhotoEntity, BaseViewHolder
     @Override
     protected void convert(final BaseViewHolder helper, PhotoEntity item)
     {
-        NiceImageView mImageView = helper.getView(R.id.image_thumbnail);
-        int imageWidth = item.width;
-        int imageHeight = item.height;
-        Resources r = mContext.getResources();
-        DisplayMetrics outMetrics = r.getDisplayMetrics();
-        int targetWidth = ((outMetrics.widthPixels - r.getDimensionPixelSize(R.dimen.dp_3) * 4) / 3);
-        int targetHeight = (int) (imageHeight / (float) (imageWidth / targetWidth));
-        ViewGroup.LayoutParams params = mImageView.getLayoutParams();
-        params.width = targetWidth;
-        params.height = targetHeight;
-        Log.d(TAG, targetWidth + "|" + targetHeight + "&" + imageWidth + "|" + imageHeight);
+        final NiceImageView mImageView = helper.getView(R.id.image_thumbnail);
+        ViewGroup.LayoutParams params = helper.itemView.getLayoutParams();
+        if (params instanceof FlexboxLayoutManager.LayoutParams)
+            ((FlexboxLayoutManager.LayoutParams) params).setFlexGrow(1.0f);
         ColorDrawable mLoadingColor;
         int[] rgb = item.rgb;
         if (rgb.length == 3)
@@ -58,8 +55,19 @@ public class PictureAdapter extends BaseQuickAdapter<PhotoEntity, BaseViewHolder
                 .apply(new RequestOptions()
                         .placeholder(mLoadingColor)
                         .error(mLoadingColor)
-                        .centerCrop()
-                        .override(targetWidth, targetHeight))
-                .into(mImageView);
+                        .centerCrop())
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition)
+                    {
+                        mImageView.setImageDrawable(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder)
+                    {
+
+                    }
+                });
     }
 }

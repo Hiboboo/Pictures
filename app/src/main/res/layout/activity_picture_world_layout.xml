@@ -26,7 +26,7 @@
         app:stl_dividerColor="@color/transparent"
         app:stl_dividerThickness="0.0dp"
         app:stl_distributeEvenly="true"/>
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/picture_views_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

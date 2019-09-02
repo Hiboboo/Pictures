@@ -2,11 +2,13 @@ package com.bobby.pictures.actions.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bobby.pictures.R;
 import com.bobby.pictures.actions.abs.BaseFragment;
@@ -19,10 +21,12 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxItemDecoration;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * 首页全部图片
@@ -48,12 +52,12 @@ public class PictureHomeFragment extends BaseFragment
         mRefreshLayout.setOnRefreshListener(mRefreshListener);
         RecyclerView mRecyclerView = contentView.findViewById(R.id.recyclerview);
         FlexboxLayoutManager manager = new FlexboxLayoutManager(mContext);
-        manager.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-        manager.setFlexWrap(FlexWrap.WRAP);
-        manager.setFlexDirection(FlexDirection.ROW);
-        manager.setAlignItems(AlignItems.FLEX_START);
+        manager.setFlexWrap(FlexWrap.WRAP); // 按正常方向换行
+        manager.setFlexDirection(FlexDirection.ROW); // 主轴为水平方向，起点在左端
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.setHasFixedSize(true);
+        FlexboxItemDecoration itemDecoration = new FlexboxItemDecoration(mContext);
+        itemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(mContext, R.drawable.transparent)));
+        mRecyclerView.addItemDecoration(itemDecoration);
         adapter = new PictureAdapter(new ArrayList<PhotoEntity>());
         adapter.setEnableLoadMore(true);
         adapter.setOnLoadMoreListener(mLoadMoreListener, mRecyclerView);
@@ -120,7 +124,7 @@ public class PictureHomeFragment extends BaseFragment
         if (page > 2)
         {
             adapter.addData(entities);
-//            adapter.setEnableLoadMore(!entities.isEmpty());
+            adapter.setEnableLoadMore(!entities.isEmpty());
         } else
             adapter.setNewData(entities);
     }

@@ -2,14 +2,8 @@ package com.bobby.pictures.actions;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -20,11 +14,24 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.Operation;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+
 import com.bobby.pictures.R;
 import com.bobby.pictures.actions.abs.ImmerseAppCompatActivity;
-import com.bobby.pictures.service.JobSchedulerService;
+import com.bobby.pictures.service.DownloadSettingsWorker;
 import com.bobby.pictures.util.SettingManager;
 import com.bobby.pictures.util.ViewUtil;
+
+import java.util.concurrent.TimeUnit;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
@@ -112,19 +119,19 @@ public class SettingActivity extends ImmerseAppCompatActivity
     {
         SettingManager.setAutoRefreshService(mSwitch.isChecked());
         SettingManager.setSearchKeyword(mKeywordInput.getText());
-        int minute = 60;
+        int minute = 15;
         if (!TextUtils.isEmpty(mIntervalTimeInput.getText()))
             minute = Integer.parseInt(mIntervalTimeInput.getText().toString());
         SettingManager.setAutoRefreshIntervalTime(minute);
-        int networkType = JobInfo.NETWORK_TYPE_ANY;
+        NetworkType networkType = NetworkType.CONNECTED;
         switch (mNetworkTypeGroup.getCheckedRadioButtonId())
         {
             case R.id.radio_network_any:
-                networkType = JobInfo.NETWORK_TYPE_ANY;
+                networkType = NetworkType.CONNECTED;
                 SettingManager.setNetworkType(mNetworkType_Any);
                 break;
             case R.id.radio_network_wifi:
-                networkType = JobInfo.NETWORK_TYPE_UNMETERED;
+                networkType = NetworkType.UNMETERED;
                 SettingManager.setNetworkType(mNetworkType_Wifi);
                 break;
         }
@@ -143,7 +150,7 @@ public class SettingActivity extends ImmerseAppCompatActivity
         }
         SettingManager.setNeedWallpageCrop(isNeedCrop);
         SettingManager.save();
-        this.startJobService(networkType, minute);
+        this.startWorkerTask(networkType, minute);
     }
 
     private CompoundButton.OnCheckedChangeListener mCheckChangeListener = new CompoundButton.OnCheckedChangeListener()
@@ -151,14 +158,12 @@ public class SettingActivity extends ImmerseAppCompatActivity
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
         {
-            switch (buttonView.getId())
+            if (buttonView.getId() == R.id.switch_setting_wallpager)
             {
-                case R.id.switch_setting_wallpager:
-                    if (isChecked)
-                        mViewUtil.showAnimView(mWallpagerPanel);
-                    else
-                        mViewUtil.hideAnimView(mWallpagerPanel, false);
-                    break;
+                if (isChecked)
+                    mViewUtil.showAnimView(mWallpagerPanel);
+                else
+                    mViewUtil.hideAnimView(mWallpagerPanel, false);
             }
         }
     };
@@ -172,33 +177,26 @@ public class SettingActivity extends ImmerseAppCompatActivity
 
     private boolean isAllowStorage = false;
 
-    private void startJobService(int networkType, int minute)
+    private void startWorkerTask(NetworkType networkType, int minute)
     {
         if (!isAllowStorage)
             return;
-        JobScheduler scheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
-        int mOldId = SettingManager.getAutoRefreshServiceID();
-        if (mOldId > 0)
-        {
-            Log.i("AutoRefreshService", "已取消服务：" + mOldId);
-            scheduler.cancel(mOldId);
-        }
-        // 如果已经关闭了自动更新，就不要再开启服务了
-        if (!mSwitch.isChecked())
-            return;
-        int mNid = (int) (System.currentTimeMillis() / 1000);
-        SettingManager.setAutoRefreshServiceID(mNid);
-        SettingManager.save();
-        Log.i("AutoRefreshService", "开启新的服务：" + mNid);
-        ComponentName component = new ComponentName(this, JobSchedulerService.class);
-        JobInfo info = new JobInfo.Builder(mNid, component)
+        WorkManager.getInstance().cancelAllWork();
+        PeriodicWorkRequest.Builder builder = new PeriodicWorkRequest.Builder(
+                DownloadSettingsWorker.class,
+                minute,
+                TimeUnit.MINUTES
+        );
+        builder.setInputData(new Data.Builder()
+                .build());
+        builder.setConstraints(new Constraints.Builder()
                 .setRequiredNetworkType(networkType)
-                .setPeriodic(minute * 60 * 1000)
-                .setRequiresDeviceIdle(false)
-                .setPersisted(true)
-                .setBackoffCriteria(3000, JobInfo.BACKOFF_POLICY_LINEAR)
-                .build();
-        if (scheduler.schedule(info) == JobScheduler.RESULT_SUCCESS)
+                .setTriggerContentMaxDelay(5, TimeUnit.MINUTES)
+                .build());
+        WorkRequest request = builder.build();
+        Log.i("AutoRefreshService", "开启新的服务：" + request.getId());
+        Operation operation = WorkManager.getInstance().enqueue(request);
+        if (operation.getState().getValue() instanceof Operation.State.SUCCESS)
             Log.v("AutoRefreshService", "Auto refresh service start ..");
     }
 
